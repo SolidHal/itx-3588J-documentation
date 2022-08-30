@@ -3,10 +3,15 @@ Some useful information for liberating the itx-3588J board
 
 
 #TODO
-- SD firmware upgrade layout
-- SD boot layout
 - dump wiki pages from https://wiki.t-firefly.com/en/Core-3588J/index.html
 - make tool to create SD boot&upgrade images from linux
+    - the "firmware" upgrade process requires functional uboot and recovery partitions on the emmc
+    - all we really need to have a bootable sd card image is
+      - 1) an ext4 partition marked bootable with extlinux
+- build packs some ini text files with the u-boot image
+    - look at the .bin files the ini files load
+    - look at the RKTRUST ini and its binaries
+- make a libre linux image that the existing uboot boots
 
 
 
@@ -328,18 +333,11 @@ while uboot.img is linked to
 uboot.img -> ../u-boot/uboot.img
 
 ## boot process (tenative)
-(recovery??)
 uboot spl (miniloaderall)
 uboot tpl ?? CONFIG_SUPPORT_TPL=y
 uboot
 extlinux
 linux
-
-TODO: 
-- make uboot output information
-- make recovery output information
-- make extlinux output information
-
 
 ## u-boot notes
 
@@ -363,7 +361,7 @@ this seems like an interesting option
 CONFIG_AUTOBOOT=y
 ```
 
-build packs some inis with the u-boot image
+build packs some ini text files with the u-boot image
 ```
 ********boot_merger ver 1.2********
 Info:Pack loader ok.
