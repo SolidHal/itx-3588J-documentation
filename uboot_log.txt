@@ -1,0 +1,211 @@
+DDR Version V1.07 20220412
+LPDDR4X, 2112MHz
+channel[0] BW=16 Col=10 Bk=8 CS0 Row=17 CS1 Row=17 CS=2 Die BW=16 Size=4096MB
+channel[1] BW=16 Col=10 Bk=8 CS0 Row=17 CS1 Row=17 CS=2 Die BW=16 Size=4096MB
+channel[2] BW=16 Col=10 Bk=8 CS0 Row=17 CS1 Row=17 CS=2 Die BW=16 Size=4096MB
+channel[3] BW=16 Col=10 Bk=8 CS0 Row=17 CS1 Row=17 CS=2 Die BW=16 Size=4096MB
+change to F1: 528MHz
+change to F2: 1068MHz
+change to F3: 1560MHz
+change to F0: 2112MHz
+out
+U-Boot SPL board init
+U-Boot SPL 2017.09-gc060f28d70-220414 #zyf (Apr 18 2022 - 18:13:34)
+Failed to set cpub01
+Failed to set cpub23
+unknown raw ID phN
+unrecognized JEDEC id bytes: 00, 00, 00
+Trying to boot from MMC2
+MMC: no card present
+mmc_init: -123, time 0
+spl: mmc init failed with error: -123
+Trying to boot from MMC1
+Trying fit image at 0x4000 sector
+## Verified-boot: 0
+## Checking atf-1 0x00040000 ... sha256(5ae6932916...) + OK
+## Checking uboot 0x00200000 ... sha256(67197508eb...) + OK
+## Checking fdt 0x00348350 ... sha256(c07f4a4d71...) + OK
+## Checking atf-2 0x000f0000 ... sha256(c00c7fd75b...) + OK
+## Checking atf-3 0xff100000 ... sha256(71c3a5841b...) + OK
+## Checking atf-4 0xff001000 ... sha256(2301cf73be...) + OK
+## Checking optee 0x08400000 ... sha256(4ed9cd20b5...) + OK
+Jumping to U-Boot(0x00200000) via ARM Trusted Firmware(0x00040000)
+Total: 119.213 ms
+
+INFO:    Preloader serial: 2
+NOTICE:  BL31: v2.3():v2.3-384-g45c8fcb44:derrick.huang
+NOTICE:  BL31: Built : 15:14:04, Jun 18 2022
+INFO:    ext 32k is not valid
+INFO:    GICv3 without legacy support detected.
+INFO:    ARM GICv3 driver initialized in EL3
+INFO:    system boots from cpu-hwid-0
+INFO:    idle_st=0x21fff, pd_st=0x11fff9, repair_st=0xfff70001
+INFO:    dfs DDR fsp_params[0].freq_mhz= 2112MHz
+INFO:    dfs DDR fsp_params[1].freq_mhz= 528MHz
+INFO:    dfs DDR fsp_params[2].freq_mhz= 1068MHz
+INFO:    dfs DDR fsp_params[3].freq_mhz= 1560MHz
+INFO:    BL31: Initialising Exception Handling Framework
+INFO:    BL31: Initializing runtime services
+INFO:    BL31: Initializing BL32
+INFO:    hdmirx_handler: dma not on, ret
+I/TC:
+I/TC: OP-TEE version: 3.13.0-645-g87d94c5ef8 #xb.wang (gcc version 10.2.1 20201103 (GNU Toolchain for the A-profile Architecture 10.2-2020.11 (arm-10.16))) #1 Tue Jun 14 10:44:31 CST 2022 aarch64
+I/TC: Primary CPU initializing
+I/TC: Primary CPU switching to normal world boot
+INFO:    BL31: Preparing for EL3 exit to normal world
+INFO:    Entry point address = 0x200000
+INFO:    SPSR = 0x3c9
+U-Boot 2017.09(u-boot commit id: fb3b51b0fc)(sdk version: rk3588_linux_release_20220422_v0.1.0a)-gfb3b51b0fc-dirty #solidhal (Aug 24 2022 - 15:19:59 -0700)
+
+Model: Rockchip RK3588 Evaluation Board
+PreSerial: 2, raw, 0xfeb50000
+DRAM:  15.7 GiB
+Sysmem: init
+Relocation Offset: edb2f000
+Relocation fdt: eb9fa010 - eb9fecc0
+CR: M/C/I
+Using default environment
+
+mmc@fe2c0000: 1, mmc@fe2e0000: 0
+Bootdev(atags): mmc 0
+MMC0: HS200, 200Mhz
+PartType: EFI
+DM: v2
+boot mode: normal
+=================begin===================
+159672 bytes read in 9 ms (16.9 MiB/s)
+DTB(Distro): rk-kernel.dtb
+I2c0 speed: 100000Hz
+vsel-gpios- not found!
+en-gpios- not found!
+vdd_cpu_big0_s0 800000 uV
+vsel-gpios- not found!
+en-gpios- not found!
+vdd_cpu_big1_s0 800000 uV
+I2c1 speed: 100000Hz
+vsel-gpios- not found!
+en-gpios- not found!
+vdd_npu_s0 800000 uV
+spi2: RK806: 2
+ON=0x00, OFF=0x00
+vdd_gpu_s0 750000 uV
+vdd_cpu_lit_s0 750000 uV
+vdd_log_s0 750000 uV
+vdd_vdenc_s0 init 750000 uV
+vdd_ddr_s0 850000 uV
+I2c6 speed: 400000Hz
+get vp0 plane mask:0x5, primary id:2, cursor_plane:-1, from dts
+get vp1 plane mask:0xa, primary id:3, cursor_plane:-1, from dts
+get vp2 plane mask:0x140, primary id:8, cursor_plane:-1, from dts
+get vp3 plane mask:0x280, primary id:9, cursor_plane:-1, from dts
+Could not find baseparameter partition
+In:    serial
+Out:   serial
+Err:   serial
+Model: Firefly ITX-3588J HDMI(Linux)
+No resource partition
+No file: logo.bmp
+=================begin===================
+512 bytes read in 3 ms (166 KiB/s)
+logo(Distro): logo.bmp
+=================begin===================
+127818 bytes read in 4 ms (30.5 MiB/s)
+logo(Distro): logo.bmp
+Rockchip UBOOT DRM driver version: v1.0.1
+vp0 have layer nr:2[0 2 ], primary plane: 2
+vp1 have layer nr:2[1 3 ], primary plane: 3
+vp2 have layer nr:2[6 8 ], primary plane: 8
+vp3 have layer nr:2[7 9 ], primary plane: 9
+Monitor has basic audio support
+can't find to match
+Could not find baseparameter partition
+color_format:0
+hdmi_select_link_config use tmds mode
+mode:3840x2160 bus_format:0x100a
+hdmi@fde80000:  detailed mode clock 297000 kHz, flags[5]
+    H: 3840 4016 4104 4400
+    V: 2160 2168 2178 2250
+bus_format: 100a
+VOP update mode to: 3840x2160p0, type: HDMI0 for VP0
+dclk:297000,if_pixclk_div;2,if_dclk_div:4
+hdptx_ropll_cmn_config bus_width:2d5190 rate:2970000
+hdptx phy pll locked!
+VOP VP0 enable Esmart0[500x501->500x501@1670x829] fmt[2] addr[0xedf20000]
+CEA mode used vic=96
+mtmdsclock:2970000
+bus_width:0x2d5190,bit_rate:2970000
+hdptx phy lane locked!
+dw_hdmi_setup HDMI mode
+don't use dsc mode
+dw hdmi qp use tmds mode
+hdmi@fdea0000 disconnected
+CLK: (uboot. arm: enter 1008000 KHz, init 1008000 KHz, kernel 0N/A)
+  b0pll 24000 KHz
+  b1pll 24000 KHz
+  lpll 24000 KHz
+  v0pll 24000 KHz
+  aupll 786431 KHz
+  cpll 1500000 KHz
+  gpll 1188000 KHz
+  npll 850000 KHz
+  ppll 1100000 KHz
+  aclk_center_root 702000 KHz
+  pclk_center_root 100000 KHz
+  hclk_center_root 396000 KHz
+  aclk_center_low_root 500000 KHz
+  aclk_top_root 594000 KHz
+  pclk_top_root 100000 KHz
+  aclk_low_top_root 396000 KHz
+Net:   clk_get_by_name(rx) failed: -61clk_get_by_name(tx) failed: -61No phy clock provided -61gpio_request_by_name(phy reset) not provided -2clk_get_by_name(rx) failed: -61clk_get_by_name(tx) failed: -61No phy clock provided -61gpio_requ0
+Hit key to stop autoboot('CTRL+C'):  0
+ANDROID: reboot reason: "(none)"
+optee api revision: 2.0
+TEEC: Waring: Could not find security partition
+Not AVB images, AVB skip
+No valid android hdr
+Android image load failed
+Android boot failed, error -1.
+## Booting FIT Image FIT: No fit blob
+FIT: No FIT image
+Unknown command 'bootrkp' - try 'help'
+MMC: no card present
+mmc_init: -123, time 0
+switch to partitions #0, OK
+mmc0(part 0) is current device
+Scanning mmc 0:3...
+Found /extlinux/extlinux.conf
+Retrieving file: /extlinux/extlinux.conf
+=================begin===================
+101 bytes read in 3 ms (32.2 KiB/s)
+1:      rk-kernel.dtb linux-5.10.66
+Retrieving file: /initrd-5.10.66
+=================begin===================
+9233322 bytes read in 54 ms (163.1 MiB/s)
+Retrieving file: /Image-5.10.66
+=================begin===================
+35807744 bytes read in 230 ms (148.5 MiB/s)
+Retrieving file: /rk-kernel.dtb
+=================begin===================
+159672 bytes read in 8 ms (19 MiB/s)
+Fdt Ramdisk skip relocation
+## Flattened Device Tree blob at 0x0a100000
+   Booting using the fdt blob at 0x0a100000
+  'reserved-memory' cma: addr=10000000 size=10000000
+   Using Device Tree in place at 000000000a100000, end 000000000a129fb7
+No resource partition
+No file: logo_kernel.bmp
+=================begin===================
+512 bytes read in 4 ms (125 KiB/s)
+logo(Distro): logo_kernel.bmp
+=================begin===================
+127818 bytes read in 4 ms (30.5 MiB/s)
+logo(Distro): logo_kernel.bmp
+Adding bank: 0x00200000 - 0x08400000 (size: 0x08200000)
+Adding bank: 0x09400000 - 0xf0000000 (size: 0xe6c00000)
+Adding bank: 0x100000000 - 0x3fc000000 (size: 0x2fc000000)
+Adding bank: 0x3fc500000 - 0x3fff00000 (size: 0x03a00000)
+Total: 1089.720 ms
+
+Starting kernel ...
+
+[    1.206975] Booting Linux on physical CPU 0x0000000000 [0x412fd050]

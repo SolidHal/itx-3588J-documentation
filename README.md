@@ -377,3 +377,120 @@ pack uboot.img okay! Input: /home/solidhal/ITX-3588J-Linux-SDK/rkbin/RKTRUST/RK3
 Platform RK3588 is build OK, with exist .config
 /home/solidhal/ITX-3588J-Linux-SDK/prebuilts/gcc/linux-x86/aarch64/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-
 ```
+
+## stock u-boot boot process
+autoboots to
+```
+bootcmd=boot_android ${devtype} ${devnum};boot_fit;bootrkp;run distro_bootcmd;
+```
+
+which when running ubuntu/debian ends up only really doing `run distro_bootcmd`
+which is
+```
+distro_bootcmd=for target in ${boot_targets}; do run bootcmd_${target}; done
+```
+which goes through this list
+so if the sd card is present, that is booted first. Followed by the emmc, etc...
+```
+boot_targets=mmc1 mmc0 mtd2 mtd1 mtd0 usb0 pxe dhcp
+```
+to run one of
+```
+bootcmd_dhcp=run boot_net_usb_start; if dhcp ${scriptaddr} ${boot_script_dhcp}; then source ${scriptaddr}; fi;
+bootcmd_mmc0=setenv devnum 0; run mmc_boot
+bootcmd_mmc1=setenv devnum 1; run mmc_boot
+bootcmd_mtd0=setenv devnum 0; run mtd_boot
+bootcmd_mtd1=setenv devnum 1; run mtd_boot
+bootcmd_mtd2=setenv devnum 2; run mtd_boot
+bootcmd_pxe=run boot_net_usb_start; dhcp; if pxe get; then pxe boot; fi
+bootcmd_usb0=setenv devnum 0; run usb_boot
+```
+continuing down the emmc/sd boot path:
+```
+mmc_boot=if mmc dev ${devnum}; then setenv devtype mmc; run scan_dev_for_boot_part; fi
+```
+
+so on emmc boot
+```
+devnum=0
+devtype=mmc
+```
+
+moving on,
+```
+scan_dev_for_boot_part=part list ${devtype} ${devnum} -bootable devplist; env exists devplist || setenv devplist 1; for distro_bootpart in ${devplist}; do if fstype ${devtype} ${devnum}:${distro_bootpart} bootfstype; then run scan_dev_for_boot; fi; done
+```
+
+so we find the partition on the device that is marked as "bootable" and save it to `devplist`
+if we don't find a bootable partition, we just arbitrarily choose the first one
+
+so our vars look like:
+
+```
+devnum=0
+devtype=mmc
+devplist=3
+distro_bootpart=3
+bootfstype=ext4
+```
+
+for reference, below is the output of `part list mmc 0`
+
+```
+Partition Map for MMC device 0  --   Partition Type: EFI
+
+Part    Start LBA       End LBA         Name
+        Attributes
+        Type GUID
+        Partition GUID
+  1     0x00004000      0x00005fff      "uboot"
+        attrs:  0x0000000000000000
+        type:   f808d051-1602-4dcd-9452-f9637fefc49a
+        guid:   b750e44e-833f-4a30-c38c-b117241d84d4
+  2     0x00006000      0x00007fff      "misc"
+        attrs:  0x0000000000000000
+        type:   c6d08308-e418-4124-8890-f8411e3d8d87
+        guid:   a1c81622-7741-47ad-b846-c6972488d396
+  3     0x00008000      0x00087fff      "boot"
+        attrs:  0x0000000000000004
+        type:   2a583e58-486a-4bd4-ace4-8d5454e97f5c
+        guid:   43784a32-a03d-4ade-92c6-ede64ff9b794
+  4     0x00088000      0x000c7fff      "recovery"
+        attrs:  0x0000000000000000
+        type:   6115f139-4f47-4baf-8d23-b6957eaee4b3
+        guid:   000b305f-484a-4582-9090-4ad0099d47bd
+  5     0x000c8000      0x000d7fff      "backup"
+        attrs:  0x0000000000000000
+        type:   a83fba16-d354-45c5-8b44-3ec50832d363
+        guid:   24eeb649-277f-4c11-ffeb-d9f20027a83b
+  6     0x000d8000      0x00cd7fff      "rootfs"
+        attrs:  0x0000000000000000
+        type:   500e2214-b72d-4cc3-d7c1-8419260130f5
+        guid:   614e0000-0000-4b53-8000-1d28000054a9
+  7     0x00cd8000      0x0e8f5fde      "userdata"
+        attrs:  0x0000000000000000
+        type:   e099da71-5450-44ea-aa9f-1b771c582805
+        guid:   2bfee623-d83c-426a-ab80-21732c9bb7d3
+```
+
+on to `run scan_dev_for_boot`
+```
+scan_dev_for_boot=echo Scanning ${devtype} ${devnum}:${distro_bootpart}...; for prefix in ${boot_prefixes}; do run scan_dev_for_extlinux; run scan_dev_for_scripts; done;
+```
+
+so `prefix` is one of
+```
+boot_prefixes=/ /boot/
+```
+
+```
+scan_dev_for_extlinux=if test -e ${devtype} ${devnum}:${distro_bootpart} ${prefix}extlinux/extlinux.conf; then echo Found ${prefix}extlinux/extlinux.conf; run boot_extlinux; echo SCRIPT FAILED: continuing...; fi
+```
+
+```
+boot_extlinux=sysboot ${devtype} ${devnum}:${distro_bootpart} any ${scriptaddr} ${prefix}extlinux/extlinux.conf
+```
+
+```
+scriptaddr=0x00500000
+```
