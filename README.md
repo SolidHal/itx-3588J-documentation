@@ -12,6 +12,13 @@ Some useful information for liberating the itx-3588J board
     - look at the .bin files the ini files load
     - look at the RKTRUST ini and its binaries
 - make a libre linux image that the existing uboot boots
+- make a bootable root fs with mesa 22.2 (from bookworm/sid)
+  - won't work, panfrost has support for first gen valhall gpus (mali G-57)
+    but not the rk3588s mali-G610
+    RK3588's G610 is 2nd-gen Valhall ("v10" in developer-speak here)
+
+- test basic functionality
+- test 2FA encryption
 
 
 
@@ -111,7 +118,7 @@ sudo dpkg --force-all -i python-dbus_1.2.8-3_amd64.deb
 force install python-parted
 ```
 https://packages.debian.org/buster/python-parted
-sudo dpkg --force-all -i python-parted_3.11.2-10_amd64.deb 
+sudo dpkg --force-all -i python-parted_3.11.2-10_amd64.deb
 ```
 
 force install python-linaro-image-tools_2016.05-1_all.deb
@@ -492,3 +499,270 @@ boot_extlinux=sysboot ${devtype} ${devnum}:${distro_bootpart} any ${scriptaddr} 
 ```
 scriptaddr=0x00500000
 ```
+
+## Manually boot sdcard
+spam ctrl+c to get into uboot
+then
+sysboot mmc 1:1 any 0x00500000 /extlinux/extlinux.conf
+
+or just let it boot normally, the sdcard is preferred over the internal emmc
+
+
+## Make a bootable SD card
+
+to get something basic booting need:
+```
+cat /extlinux/extlinux.conf
+label rk-kernel.dtb linux-5.10.66
+        kernel /Image-5.10.66
+        fdt /rk-kernel.dtb
+        initrd /initrd-5.10.66
+```
+- kernel image
+  - arch/arm64/boot/Image
+- device tree binary
+  - rk3588-firefly-itx-3588j.dtb
+- basic initrd
+
+sd card has 2 partitions
+gpt table
+both formatted as ext4
+partition 1 "boot" marked as bootable
+partition 2 is ignored for now
+
+## Linux notes
+PCIE_ROCKCHIP_DW_HOST
+
+provided kernel source is based on *android* linux 5.10
+which explains all of the android related cmdline options...
+```
+[    1.600617] Kernel command line: storagemedia=emmc androidboot.storagemedia=emmc androidboot.mode=normal  storagenode=/mmc@fe2e0000 androidboot.verifiedbootstate=orange ro rootwait earlycon=uart8250,mmio32,0xfeb50000 console=ttyFIQ0 irqchip.gicv3_pseudo_nmi=0 root=PARTLABEL=rootfs rootfstype=ext4 overlayroot=device:dev=PARTLABEL=userdata,fstype=ext4,mkfs=1 coherent_pool=1m systemd.gpt_auto=0 cgroup_enable=memory swapaccount=1
+```
+
+
+this will complicate getting linux libre working
+need to:
+1) transform kernel config to something linux-libre can work with DONE
+2) determine what patches we much bring in from the provided kernel
+
+
+to get something basic booting need:
+```
+cat /boot/extlinux/extlinux.conf
+label rk-kernel.dtb linux-5.10.66
+        kernel /Image-5.10.66
+        fdt /rk-kernel.dtb
+        initrd /initrd-5.10.66
+```
+- kernel image
+  - arch/arm64/boot/Image
+- device tree binary
+  - rk3588-firefly-itx-3588j.dtb
+  - kernel/arch/arm64/boot/dts/rockchip/rk3588-firefly-itx-3588j.dts
+  - kernel/arch/arm64/boot/dts/rockchip/rk3588-firefly-itx-3588j.dtsi
+  - kernel/arch/arm64/boot/dts/rockchip/rk3588-firefly-itx-cam-8ms1m.dtsi
+  - etc
+- basic initrd
+
+what if we skip the initrd?
+
+test kernel by creating an sdcard w/ extlinux & kernel image that we can boot from the emmcs uboot
+- just need one ext4 partition, marked "bootable"
+
+TARGET_ARCH          =arm64
+TARGET_KERNEL_CONFIG =rockchip_linux_defconfig
+TARGET_KERNEL_DTS    =rk3588-firefly-itx-3588j
+TARGET_KERNEL_CONFIG_FRAGMENT =firefly-linux.config
+RK_TARGET_PRODUCT    =rk3588
+
+
+#### failed boot:
+```
+=> sysboot mmc 1:1 any 0x00500000 /extlinux/extlinux.conf
+Retrieving file: /extlinux/extlinux.conf
+=================begin===================
+122 bytes read in 5 ms (23.4 KiB/s)
+1:      rk-kernel.dtb linux-5.10.66
+Retrieving file: /initrd-5.10.66
+=================begin===================
+9233322 bytes read in 744 ms (11.8 MiB/s)
+Retrieving file: /Image-5.10.66
+=================begin===================
+40776616 bytes read in 3267 ms (11.9 MiB/s)
+Retrieving file: /rk-kernel.dtb
+=================begin===================
+160168 bytes read in 17 ms (9 MiB/s)
+Fdt Ramdisk skip relocation ## I think this means the image just isn't at a high address?
+Bad Linux ARM64 Image magic!
+```
+^^^^ this was because I was using vmlinux instead of arch/arm64/boot/Image
+
+#### vs working boot:
+
+```
+Scanning mmc 0:3...
+Found /extlinux/extlinux.conf
+Retrieving file: /extlinux/extlinux.conf
+=================begin===================
+101 bytes read in 3 ms (32.2 KiB/s)
+1:      rk-kernel.dtb linux-5.10.66
+Retrieving file: /initrd-5.10.66
+=================begin===================
+9233322 bytes read in 54 ms (163.1 MiB/s)
+Retrieving file: /Image-5.10.66
+=================begin===================
+35807744 bytes read in 229 ms (149.1 MiB/s)
+Retrieving file: /rk-kernel.dtb
+=================begin===================
+159672 bytes read in 9 ms (16.9 MiB/s)
+Fdt Ramdisk skip relocation
+## Flattened Device Tree blob at 0x0a100000
+   Booting using the fdt blob at 0x0a100000
+  'reserved-memory' cma: addr=10000000 size=10000000
+   Using Device Tree in place at 000000000a100000, end 000000000a129fb7
+No resource partition
+No file: logo_kernel.bmp
+=================begin===================
+512 bytes read in 3 ms (166 KiB/s)
+logo(Distro): logo_kernel.bmp
+=================begin===================
+127818 bytes read in 5 ms (24.4 MiB/s)
+logo(Distro): logo_kernel.bmp
+Adding bank: 0x00200000 - 0x08400000 (size: 0x08200000)
+Adding bank: 0x09400000 - 0xf0000000 (size: 0xe6c00000)
+Adding bank: 0x100000000 - 0x3fc000000 (size: 0x2fc000000)
+Adding bank: 0x3fc500000 - 0x3fff00000 (size: 0x03a00000)
+Total: 625.550 ms
+```
+
+fails to even get to the basic initramfs, kernel panics
+
+```
+[    0.010540] Platform MSI: msi-controller@fe640000 domain created
+[    0.011097] Platform MSI: msi-controller@fe660000 domain created
+[    0.011918] PCI/MSI: /interrupt-controller@fe600000/msi-controller@fe640000 domain created
+[    0.012728] PCI/MSI: /interrupt-controller@fe600000/msi-controller@fe660000 domain created
+[    0.013593] EFI services will not be available.
+[    0.014398] smp: Bringing up secondary CPUs ...
+I/TC: Secondary CPU 1 initializing
+I/TC: Secondary CPU 1 switching to normal world boot
+[    0.016073] Detected VIPT I-cache on CPU1
+[    0.016112] GICv3: CPU1: found redistributor 100 region 0:0x00000000fe6a0000
+[    0.016125] GICv3: CPU1: using allocated LPI pending table @0x00000001001c0000
+[    1.422700] ITS queue timeout (192 1)
+[    1.422705] ITS cmd its_build_mapc_cmd failed
+[    2.829432] ITS queue timeout (256 1)
+[    2.829436] ITS cmd its_build_invall_cmd failed
+[    4.237275] ITS queue timeout (192 1)
+[    4.237279] ITS cmd its_build_mapc_cmd failed
+[    5.178355] CPU1: failed to come online
+[    5.182503] CPU1: failed in unknown state : 0x0
+[    5.182913] ------------[ cut here ]------------
+[    5.183329] Dying CPU not properly vacated!
+[    5.183341] WARNING: CPU: 0 PID: 1 at kernel/sched/core.c:9506 sched_cpu_dying+0xf0/0x1b0
+[    5.184460] Modules linked in:
+[    5.184742] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.5-gnu+ #2
+[    5.185316] Hardware name: Firefly ITX-3588J HDMI(Linux) (DT)
+[    5.185833] pstate: 600000c9 (nZCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    5.186463] pc : sched_cpu_dying+0xf0/0x1b0
+[    5.186843] lr : sched_cpu_dying+0xf0/0x1b0
+[    5.187226] sp : ffffffc009fbbc50
+[    5.187525] x29: ffffffc009fbbc50 x28: 0000000000000000 x27: 0000000000000000
+[    5.188174] x26: ffffffc3f4771000 x25: ffffffc009666770 x24: ffffff83fddd7770
+[    5.188824] x23: 0000000000000000 x22: 000000000000005f x21: ffffffc009bba920
+[    5.189474] x20: 0000000000000001 x19: ffffff83fdde5940 x18: 0000000000000000
+[    5.190122] x17: 0000000000000000 x16: 0000000000000000 x15: 000000000000000a
+[    5.190772] x14: 0000000000000000 x13: 2164657461636176 x12: 20796c7265706f72
+[    5.191420] x11: 656820747563205b x10: 2d2d2d2d2d2d2d2d x9 : ffffffc0080e7324
+[    5.192068] x8 : 5d20657265682074 x7 : 727020746f6e2055 x6 : ffffffc009ee3a69
+[    5.192717] x5 : 00000000000affa8 x4 : 000000000000000d x3 : 0000000000000000
+[    5.193367] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffffff8100350000
+[    5.194016] Call trace:
+[    5.194237]  sched_cpu_dying+0xf0/0x1b0
+[    5.194592]  cpuhp_invoke_callback+0x100/0x260
+[    5.194999]  cpuhp_invoke_callback_range+0x78/0xac
+[    5.195436]  _cpu_up+0x180/0x1a8
+[    5.195733]  cpu_up+0x88/0x9c
+[    5.196005]  bringup_nonboot_cpus+0x98/0x9c
+[    5.196385]  smp_init+0x3c/0x84
+[    5.196673]  kernel_init_freeable+0x128/0x2a0
+[    5.197071]  kernel_init+0x34/0x138
+[    5.197392]  ret_from_fork+0x10/0x20
+[    5.197721] ---[ end trace 0000000000000000 ]---
+[    5.198137] CPU1 enqueued tasks (0 total):
+I/TC: Secondary CPU 2 initializing
+I/TC: Secondary CPU 2 switching to normal world boot
+```
+
+
+TODO
+so we can boot into initramfs but can't seem to get much out of the init console
+- rebuild u-boot with correct uart baud rate, current build has wrong baud still
+  - write this to a different sdcard so we can continue using this one to debug
+- play around with uboot args?
+- the kernel cmdline seems to end up with some interesting tty/console settings... this is likely suspect. Not sure yet where they are coming from
+
+
+okay, so we can't boot our own initramfs
+try booting the stock initramfs (that worked in the past I believe)
+
+
+booting into stock initramfs didn't really work, though systemd prints things before hanging indefinitely
+
+ported the tty/fiq driver to linux
+
+see the following in the log:
+
+```
+[    0.078075] Registered FIQ tty driver
+```
+
+in the stock log it says more:
+```
+[    2.093471] Registered FIQ tty driver
+[    2.094064] hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.
+[    2.094799] ASID allocator initialised with 65536 entries
+[    2.096819] printk: console [ramoops-1] enabled
+[    2.097245] pstore: Registered ramoops as persistent store backend
+[    2.097810] ramoops: using 0xf0000@0x110000, ecc: 0
+[    2.142506] rockchip-gpio fd8a0000.gpio: probed /pinctrl/gpio@fd8a0000
+[    2.143340] rockchip-gpio fec20000.gpio: probed /pinctrl/gpio@fec20000
+[    2.144150] rockchip-gpio fec30000.gpio: probed /pinctrl/gpio@fec30000
+[    2.144989] rockchip-gpio fec40000.gpio: probed /pinctrl/gpio@fec40000
+[    2.145823] rockchip-gpio fec50000.gpio: probed /pinctrl/gpio@fec50000
+[    2.146448] rockchip-pinctrl pinctrl: probed pinctrl
+[    2.216071] raid6: neonx8   gen()  5726 MB/s
+[    2.272825] raid6: neonx8   xor()  4386 MB/s
+[    2.329586] raid6: neonx4   gen()  5720 MB/s
+[    2.386342] raid6: neonx4   xor()  4458 MB/s
+[    2.443101] raid6: neonx2   gen()  5391 MB/s
+[    2.499858] raid6: neonx2   xor()  4208 MB/s
+[    2.556619] raid6: neonx1   gen()  4439 MB/s
+[    2.613372] raid6: neonx1   xor()  3465 MB/s
+[    2.670146] raid6: int64x8  gen()  1370 MB/s
+[    2.726892] raid6: int64x8  xor()   881 MB/s
+[    2.783651] raid6: int64x4  gen()  1716 MB/s
+[    2.840403] raid6: int64x4  xor()   956 MB/s
+[    2.897165] raid6: int64x2  gen()  2528 MB/s
+[    2.953919] raid6: int64x2  xor()  1392 MB/s
+[    3.010677] raid6: int64x1  gen()  2095 MB/s
+[    3.067439] raid6: int64x1  xor()  1141 MB/s
+[    3.067831] raid6: using algorithm neonx8 gen() 5726 MB/s
+[    3.068323] raid6: .... xor() 4386 MB/s, rmw enabled
+[    3.068777] raid6: using neon recovery algorithm
+[    3.069748] fiq_debugger fiq_debugger.0: IRQ fiq not found
+[    3.070254] fiq_debugger fiq_debugger.0: IRQ wakeup not found
+[    3.070779] fiq_debugger_probe: could not install nmi irq handler
+[ [    3.071389] printk: console [ttyFIQ0] enabled
+   3.071389] printk: console [ttyFIQ0] enabled
+[    3.072165] printk: bootconsole [uart8250] disabled
+[    3.072165] printk: bootconsole [uart8250] disabled
+[    3.072697] Registered fiq debugger ttyFIQ0
+```
+
+debug why that is. Update: didn't solve it, went a different direction instead
+
+TODO flesh out the initramfs, get a rootfs booting
+- probably want to print available /dev/mmc devices and figure out which is our sdcard
+  using things like lsblk, and the partition labels
+

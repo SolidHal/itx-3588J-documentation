@@ -1,0 +1,380 @@
+=================begin===================
+160168 bytes read in 16 ms (9.5 MiB/s)
+Fdt Ramdisk skip relocation
+## Flattened Device Tree blob at 0x0a100000
+   Booting using the fdt blob at 0x0a100000
+  'reserved-memory' cma: addr=10000000 size=10000000
+   Using Device Tree in place at 000000000a100000, end 000000000a12a1a7
+No resource partition
+No file: logo_kernel.bmp
+** File not found logo_kernel.bmp **
+Adding bank: 0x00200000 - 0x08400000 (size: 0x08200000)
+Adding bank: 0x09400000 - 0xf0000000 (size: 0xe6c00000)
+Adding bank: 0x100000000 - 0x3fc000000 (size: 0x2fc000000)
+Adding bank: 0x3fc500000 - 0x3fff00000 (size: 0x03a00000)
+Total: 3342.768 ms
+
+Starting kernel ...
+
+[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x412fd050]
+[    0.000000] Linux version 5.19.5-gnu+ (root@liquidsnake-prawnos) (aarch64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2) #2 SMP Thu Sep 1 19:43:44 PDT 2022
+[    0.000000] Machine model: Firefly ITX-3588J HDMI(Linux)
+[    0.000000] earlycon: uart8250 at MMIO32 0x00000000feb50000 (options '')
+[    0.000000] printk: bootconsole [uart8250] enabled
+[    0.000000] efi: UEFI not found.
+[    0.000000] OF: fdt: Reserved memory: failed to reserve memory for node 'drm-cubic-lut@00000000': base 0x0000000000000000, size 0 MiB
+[    0.000000] Reserved memory: created CMA memory pool at 0x0000000010000000, size 256 MiB
+[    0.000000] OF: reserved mem: initialized node cma, compatible id shared-dma-pool
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000000200000-0x00000000ffffffff]
+[    0.000000]   DMA32    empty
+[    0.000000]   Normal   [mem 0x0000000100000000-0x00000003ffefffff]
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000000200000-0x00000000083fffff]
+[    0.000000]   node   0: [mem 0x0000000009400000-0x00000000efffffff]
+[    0.000000]   node   0: [mem 0x0000000100000000-0x00000003fbffffff]
+[    0.000000]   node   0: [mem 0x00000003fc500000-0x00000003ffefffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000000200000-0x00000003ffefffff]
+[    0.000000] On node 0, zone DMA: 512 pages in unavailable ranges
+[    0.000000] On node 0, zone DMA: 4096 pages in unavailable ranges
+[    0.000000] On node 0, zone Normal: 1280 pages in unavailable ranges
+[    0.000000] On node 0, zone Normal: 256 pages in unavailable ranges
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: PSCIv1.1 detected in firmware.
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: Trusted OS migration not required
+[    0.000000] psci: SMC Calling Convention v1.2
+[    0.000000] percpu: Embedded 27 pages/cpu s73400 r8192 d29000 u110592
+[    0.000000] Detected VIPT I-cache on CPU0
+[    0.000000] CPU features: detected: GIC system register CPU interface
+[    0.000000] CPU features: detected: Virtualization Host Extensions
+[    0.000000] CPU features: detected: ARM errata 1165522, 1319367, or 1530923
+[    0.000000] alternatives: patching kernel code
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 4058188
+[    0.000000] Kernel command line: storagemedia=emmc androidboot.storagemedia=emmc androidboot.mode=normal  storagenode=/mmc@fe2e0000 androidboot.verifiedbootstate=orange ro rootwait earlycon=uart8250,mmio32,0xfeb50000 console=ttyFIQ0 i1
+[    0.000000] Unknown kernel command line parameters "storagemedia=emmc storagenode=/mmc@fe2e0000 overlayroot=device:dev=PARTLABEL=userdata,fstype=ext4,mkfs=1 cgroup_enable=memory", will be passed to user space.
+[    0.000000] Dentry cache hash table entries: 2097152 (order: 12, 16777216 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 1048576 (order: 11, 8388608 bytes, linear)
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] software IO TLB: mapped [mem 0x00000000e9f00000-0x00000000edf00000] (64MB)
+[    0.000000] Memory: 15807408K/16490496K available (16000K kernel code, 3344K rwdata, 5548K rodata, 6528K init, 618K bss, 420944K reserved, 262144K cma-reserved)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=8, Nodes=1
+[    0.000000] ftrace: allocating 61452 entries in 241 pages
+[    0.000000] ftrace: allocated 241 pages with 5 groups
+[    0.000000] trace event string verifier disabled
+[    0.000000] rcu: Hierarchical RCU implementation.
+[    0.000000] rcu:     RCU event tracing is enabled.
+[    0.000000]  Rude variant of Tasks RCU enabled.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 30 jiffies.
+[    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+[    0.000000] GICv3: GIC: Using split EOI/Deactivate mode
+[    0.000000] GICv3: 480 SPIs implemented
+[    0.000000] GICv3: 0 Extended SPIs implemented
+[    0.000000] Root IRQ handler: gic_handle_irq
+[    0.000000] GICv3: GICv3 features: 16 PPIs
+[    0.000000] GICv3: CPU0: found redistributor 0 region 0:0x00000000fe680000
+[    0.000000] ITS [mem 0xfe640000-0xfe65ffff]
+[    0.000000] ITS@0x00000000fe640000: allocated 8192 Devices @100150000 (indirect, esz 8, psz 64K, shr 1)
+[    0.000000] ITS@0x00000000fe640000: allocated 32768 Interrupt Collections @100160000 (flat, esz 2, psz 64K, shr 1)
+[    0.000000] ITS [mem 0xfe660000-0xfe67ffff]
+[    0.000000] ITS@0x00000000fe660000: allocated 8192 Devices @100180000 (indirect, esz 8, psz 64K, shr 1)
+[    0.000000] ITS@0x00000000fe660000: allocated 32768 Interrupt Collections @100190000 (flat, esz 2, psz 64K, shr 1)
+[    0.000000] GICv3: using LPI property table @0x00000001001a0000
+[    0.000000] GICv3: CPU0: using allocated LPI pending table @0x00000001001b0000
+[    0.000000] ITS queue timeout (64 1)
+[    0.000000] ITS cmd its_build_mapc_cmd failed
+[    0.000000] ITS queue timeout (128 1)
+[    0.000000] ITS cmd its_build_invall_cmd failed
+[    0.000000] ITS queue timeout (64 1)
+[    0.000000] ITS cmd its_build_mapc_cmd failed
+[    0.000000] ITS queue timeout (128 1)
+[    0.000000] ITS cmd its_build_invall_cmd failed
+[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.000000] arch_timer: cp15 timer(s) running at 24.00MHz (phys).
+[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x588fe9dc0, max_idle_ns: 440795202592 ns
+[    0.000000] sched_clock: 56 bits at 24MHz, resolution 41ns, wraps every 4398046511097ns
+[    0.001179] Failed to get pclk for 'rk_timer'
+[    0.002186] Console: colour dummy device 80x25
+[    0.002627] Calibrating delay loop (skipped), value calculated using timer frequency.. 48.00 BogoMIPS (lpj=80000)
+[    0.003554] pid_max: default: 32768 minimum: 301
+[    0.004128] Mount-cache hash table entries: 32768 (order: 6, 262144 bytes, linear)
+[    0.004841] Mountpoint-cache hash table entries: 32768 (order: 6, 262144 bytes, linear)
+[    0.007349] cblist_init_generic: Setting adjustable number of callback queues.
+[    0.008008] cblist_init_generic: Setting shift to 3 and lim to 1.
+[    0.008757] rcu: Hierarchical SRCU implementation.
+[    0.009206] rcu:     Max phase no-delay instances is 1000.
+[    0.010540] Platform MSI: msi-controller@fe640000 domain created
+[    0.011097] Platform MSI: msi-controller@fe660000 domain created
+[    0.011918] PCI/MSI: /interrupt-controller@fe600000/msi-controller@fe640000 domain created
+[    0.012728] PCI/MSI: /interrupt-controller@fe600000/msi-controller@fe660000 domain created
+[    0.013593] EFI services will not be available.
+[    0.014398] smp: Bringing up secondary CPUs ...
+I/TC: Secondary CPU 1 initializing
+I/TC: Secondary CPU 1 switching to normal world boot
+[    0.016073] Detected VIPT I-cache on CPU1
+[    0.016112] GICv3: CPU1: found redistributor 100 region 0:0x00000000fe6a0000
+[    0.016125] GICv3: CPU1: using allocated LPI pending table @0x00000001001c0000
+[    1.422700] ITS queue timeout (192 1)
+[    1.422705] ITS cmd its_build_mapc_cmd failed
+[    2.829432] ITS queue timeout (256 1)
+[    2.829436] ITS cmd its_build_invall_cmd failed
+[    4.237275] ITS queue timeout (192 1)
+[    4.237279] ITS cmd its_build_mapc_cmd failed
+[    5.178355] CPU1: failed to come online
+[    5.182503] CPU1: failed in unknown state : 0x0
+[    5.182913] ------------[ cut here ]------------
+[    5.183329] Dying CPU not properly vacated!
+[    5.183341] WARNING: CPU: 0 PID: 1 at kernel/sched/core.c:9506 sched_cpu_dying+0xf0/0x1b0
+[    5.184460] Modules linked in:
+[    5.184742] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.5-gnu+ #2
+[    5.185316] Hardware name: Firefly ITX-3588J HDMI(Linux) (DT)
+[    5.185833] pstate: 600000c9 (nZCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    5.186463] pc : sched_cpu_dying+0xf0/0x1b0
+[    5.186843] lr : sched_cpu_dying+0xf0/0x1b0
+[    5.187226] sp : ffffffc009fbbc50
+[    5.187525] x29: ffffffc009fbbc50 x28: 0000000000000000 x27: 0000000000000000
+[    5.188174] x26: ffffffc3f4771000 x25: ffffffc009666770 x24: ffffff83fddd7770
+[    5.188824] x23: 0000000000000000 x22: 000000000000005f x21: ffffffc009bba920
+[    5.189474] x20: 0000000000000001 x19: ffffff83fdde5940 x18: 0000000000000000
+[    5.190122] x17: 0000000000000000 x16: 0000000000000000 x15: 000000000000000a
+[    5.190772] x14: 0000000000000000 x13: 2164657461636176 x12: 20796c7265706f72
+[    5.191420] x11: 656820747563205b x10: 2d2d2d2d2d2d2d2d x9 : ffffffc0080e7324
+[    5.192068] x8 : 5d20657265682074 x7 : 727020746f6e2055 x6 : ffffffc009ee3a69
+[    5.192717] x5 : 00000000000affa8 x4 : 000000000000000d x3 : 0000000000000000
+[    5.193367] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffffff8100350000
+[    5.194016] Call trace:
+[    5.194237]  sched_cpu_dying+0xf0/0x1b0
+[    5.194592]  cpuhp_invoke_callback+0x100/0x260
+[    5.194999]  cpuhp_invoke_callback_range+0x78/0xac
+[    5.195436]  _cpu_up+0x180/0x1a8
+[    5.195733]  cpu_up+0x88/0x9c
+[    5.196005]  bringup_nonboot_cpus+0x98/0x9c
+[    5.196385]  smp_init+0x3c/0x84
+[    5.196673]  kernel_init_freeable+0x128/0x2a0
+[    5.197071]  kernel_init+0x34/0x138
+[    5.197392]  ret_from_fork+0x10/0x20
+[    5.197721] ---[ end trace 0000000000000000 ]---
+[    5.198137] CPU1 enqueued tasks (0 total):
+I/TC: Secondary CPU 2 initializing
+I/TC: Secondary CPU 2 switching to normal world boot
+** 624058 printk messages dropped **
+[   10.273394]  __secondary_switched+0xa0/0xa4
+[   10.273405] bad: scheduling from the idle thread!
+[   10.273408] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G        W         5.19.5-gnu+ #2
+[   10.273416] Hardware name: Firefly ITX-3588J HDMI(Linux) (DT)
+[   10.273420] Call trace:
+[   10.273422]  dump_backtrace+0xec/0x110
+[   10.273430]  show_stack+0x24/0x34
+[   10.273437]  dump_stack_lvl+0x7c/0xa0
+[   10.273444]  dump_stack+0x18/0x34
+[   10.273451]  dequeue_task_idle+0x38/0x54
+[   10.273459]  dequeue_task+0x94/0xd8
+[   10.273467]  deactivate_task+0x2c/0x38
+[   10.273475]  __schedule+0x4fc/0x6a0
+[   10.273483]  schedule+0x90/0xd8
+[   10.273491]  schedule_preempt_disabled+0x1c/0x28
+[   10.273499]  __mutex_lock.constprop.0+0x1a0/0x27c
+[   10.273508]  __mutex_lock_slowpath+0x1c/0x28
+[   10.273517]  mutex_lock+0x40/0x50
+[   10.273525]  irq_lock_sparse+0x28/0x34
+[   10.273533]  bringup_cpu+0x30/0xc0
+[   10.273540]  cpuhp_invoke_callback+0x100/0x260
+[   10.273549]  cpuhp_invoke_callback_range+0x78/0xac
+[   10.273557]  notify_cpu_starting+0x84/0xa0
+[   10.273565]  secondary_start_kernel+0x130/0x1d0
+[   10.273572]  __secondary_switched+0xa0/0xa4
+[   10.273582] bad: scheduling from the idle thread!
+[   10.273586] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G        W         5.19.5-gnu+ #2
+[   10.273594] Hardware name: Firefly ITX-3588J HDMI(Linux) (DT)
+[   10.273597] Call trace:
+[   10.273600]  dump_backtrace+0xec/0x110
+[   10.273608]  show_stack+0x24/0x34
+[   10.273615]  dump_stack_lvl+0x7c/0xa0
+[   10.273622]  dump_stack+0x18/0x34
+[   10.273629]  dequeue_task_idle+0x38/0x54
+[   10.273637]  dequeue_task+0x94/0xd8
+[   10.273645]  deactivate_task+0x2c/0x38
+[   10.273652]  __schedule+0x4fc/0x6a0
+[   10.273661]  schedule+0x90/0xd8
+[   10.273668]  schedule_preempt_disabled+0x1c/0x28
+[   10.273677]  __mutex_lock.constprop.0+0x1a0/0x27c
+[   10.273686]  __mutex_lock_slowpath+0x1c/0x28
+[   10.273695]  mutex_lock+0x40/0x50
+[   10.273703]  irq_lock_sparse+0x28/0x34
+[   10.273711]  bringup_cpu+0x30/0xc0
+[   10.273719]  cpuhp_invoke_callback+0x100/0x260
+[   10.273727]  cpuhp_invoke_callback_range+0x78/0xac
+[   10.273735]  notify_cpu_starting+0x84/0xa0
+[   10.273743]  secondary_start_kernel+0x130/0x1d0
+[   10.273750]  __secondary_switched+0xa0/0xa4
+[   10.273760] bad: scheduling from the idle thread!
+[   10.273764] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G        W         5.19.5-gnu+ #2
+[   10.273772] Hardware name: Firefly ITX-3588J HDMI(Linux) (DT)
+[   10.273776] Call trace:
+[   10.273778]  dump_backtrace+0xec/0x110
+[   10.273785]  show_stack+0x24/0x34
+[   10.273792]  dump_stack_lvl+0x7c/0xa0
+[   10.273800]  dump_stack+0x18/0x34
+[   10.273806]  dequeue_task_idle+0x38/0x54
+[   10.273815]  dequeue_task+0x94/0xd8
+[   10.273822]  deactivate_task+0x2c/0x38
+[   10.273830]  __schedule+0x4fc/0x6a0
+[   10.273839]  schedule+0x90/0xd8
+[   10.273846]  schedule_preempt_disabled+0x1c/0x28
+[   10.273855]  __mutex_lock.constprop.0+0x1a0/0x27c
+[   10.273864]  __mutex_lock_slowpath+0x1c/0x28
+[   10.273873]  mutex_lock+0x40/0x50
+[   10.273881]  irq_lock_sparse+0x28/0x34
+[   10.273889]  bringup_cpu+0x30/0xc0
+[   10.273896]  cpuhp_invoke_callback+0x100/0x260
+[   10.273904]  cpuhp_invoke_callback_range+0x78/0xac
+[   10.273913]  notify_cpu_starting+0x84/0xa0
+[   10.273921]  secondary_start_kernel+0x130/0x1d0
+[   10.273928]  __secondary_switched+0xa0/0xa4
+[   10.273938] bad: scheduling from the idle thread!
+[   10.273941] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G        W         5.19.5-gnu+ #2
+[   10.273949] Hardware name: Firefly ITX-3588J HDMI(Linux) (DT)
+[   10.273953] Call trace:
+[   10.273956]  dump_backtrace+0xec/0x110
+[   10.273963]  show_stack+0x24/0x34
+[   10.273970]  dump_stack_lvl+0x7c/0xa0
+[   10.273977]  dump_stack+0x18/0x34
+[   10.273984]  dequeue_task_idle+0x38/0x54
+[   10.273993]  dequeue_task+0x94/0xd8
+[   10.274000]  deactivate_task+0x2c/0x38
+[   10.274008]  __schedule+0x4fc/0x6a0
+[   10.274016]  schedule+0x90/0xd8
+[   10.274024]  schedule_preempt_disabled+0x1c/0x28
+[   10.274033]  __mutex_lock.constprop.0+0x1a0/0x27c
+[   10.274042]  __mutex_lock_slowpath+0x1c/0x28
+[   10.274050]  mutex_lock+0x40/0x50
+[   10.274058]  irq_lock_sparse+0x28/0x34
+[   10.274067]  bringup_cpu+0x30/0xc0
+[   10.274074]  cpuhp_invoke_callback+0x100/0x260
+[   10.274082]  cpuhp_invoke_callback_range+0x78/0xac
+[   10.274091]  notify_cpu_starting+0x84/0xa0
+[   10.274099]  secondary_start_kernel+0x130/0x1d0
+[   10.274106]  __secondary_switched+0xa0/0xa4
+[   10.274116] bad: scheduling from the idle thread!
+[   10.274119] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G        W         5.19.5-gnu+ #2
+[   10.274128] Hardware name: Firefly ITX-3588J HDMI(Linux) (DT)
+[   10.274131] Call trace:
+[   10.274134]  dump_backtrace+0xec/0x110
+[   10.274141]  show_stack+0x24/0x34
+[   10.274148]  dump_stack_lvl+0x7c/0xa0
+[   10.274155]  dump_stack+0x18/0x34
+[   10.274162]  dequeue_task_idle+0x38/0x54
+[   10.274171]  dequeue_task+0x94/0xd8
+[   10.274178]  deactivate_task+0x2c/0x38
+[   10.274186]  __schedule+0x4fc/0x6a0
+[   10.274194]  schedule+0x90/0xd8
+[   10.274202]  schedule_preempt_disabled+0x1c/0x28
+[   10.274211]  __mutex_lock.constprop.0+0x1a0/0x27c
+[   10.274219]  __mutex_lock_slowpath+0x1c/0x28
+[   10.274228]  mutex_lock+0x40/0x50
+[   10.274237]  irq_lock_sparse+0x28/0x34
+[   10.274245]  bringup_cpu+0x30/0xc0
+[   10.274252]  cpuhp_invoke_callback+0x100/0x260
+[   10.274260]  cpuhp_invoke_callback_range+0x78/0xac
+[   10.274269]  notify_cpu_starting+0x84/0xa0
+[   10.274277]  secondary_start_kernel+0x130/0x1d0
+[   10.274284]  __secondary_switched+0xa0/0xa4
+[   10.274294] bad: scheduling from the idle thread!
+[   10.274298] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G        W         5.19.5-gnu+ #2
+[   10.274305] Hardware name: Firefly ITX-3588J HDMI(Linux) (DT)
+[   10.274309] Call trace:
+[   10.274312]  dump_backtrace+0xec/0x110
+[   10.274319]  show_stack+0x24/0x34
+[   10.274326]  dump_stack_lvl+0x7c/0xa0
+[   10.274333]  dump_stack+0x18/0x34
+[   10.274340]  dequeue_task_idle+0x38/0x54
+[   10.274349]  dequeue_task+0x94/0xd8
+[   10.274356]  deactivate_task+0x2c/0x38
+[   10.274364]  __schedule+0x4fc/0x6a0
+[   10.274372]  schedule+0x90/0xd8
+[   10.274380]  schedule_preempt_disabled+0x1c/0x28
+[   10.274389]  __mutex_lock.constprop.0+0x1a0/0x27c
+[   10.274398]  __mutex_lock_slowpath+0x1c/0x28
+[   10.274407]  mutex_lock+0x40/0x50
+[   10.274415]  irq_lock_sparse+0x28/0x34
+[   10.274423]  bringup_cpu+0x30/0xc0
+[   10.274430]  cpuhp_invoke_callback+0x100/0x260
+[   10.274438]  cpuhp_invoke_callback_range+0x78/0xac
+[   10.274447]  notify_cpu_starting+0x84/0xa0
+[   10.274455]  secondary_start_kernel+0x130/0x1d0
+[   10.274462]  __secondary_switched+0xa0/0xa4
+[   10.274472] bad: scheduling from the idle thread!
+[   10.274476] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G        W         5.19.5-gnu+ #2
+[   10.274484] Hardware name: Firefly ITX-3588J HDMI(Linux) (DT)
+[   10.274487] Call trace:
+[   10.274490]  dump_backtrace+0xec/0x110
+[   10.274497]  show_stack+0x24/0x34
+[   10.274
+[   10.276664]  dequeue_task+0x94/0xd8
+[   10.276671]  deactivate_task+0x2c/0x38
+[   10.276679]  __schedule+0x4fc/0x6a0
+[   10.276687]  schedule+0x90/0xd8
+[   10.276695]  schedule_preempt_disabled+0x1c/0x28
+[   10.276704]  __mutex_lock.constprop.0+0x1a0/0x27c
+[   10.276713]  __mutex_lock_slowpath+0x1c/0x28
+[   10.276721]  mutex_lock+0x40/0x50
+[   10.276730]  irq_lock_sparse+0x28/0x34
+[   10.276738]  bringup_cpu+0x30/0xc0
+[   10.276745]  cpuhp_invoke_callback+0x100/0x260
+[   10.276753]  cpuhp_invoke_callback_range+0x78/0xac
+[   10.276762]  notify_cpu_starting+0x84/0xa0
+[   10.276770]  secondary_start_kernel+0x130/0x1d0
+[   10.276777]  __secondary_switched+0xa0/0xa4
+[   10.276787] bad: scheduling from the idle thread!
+[   10.276790] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G        W         5.19.5-gnu+ #2
+[   10.276798] Hardware name: Firefly ITX-3588J HDMI(Linux) (DT)
+[   10.276802] Call trace:
+[   10.276805]  dump_backtrace+0xec/0x110
+[   10.276812]  show_stack+0x24/0x34
+[   10.276819]  dump_stack_lvl+0x7c/0xa0
+[   10.276826]  dump_stack+0x18/0x34
+[   10.276833]  dequeue_task_idle+0x38/0x54
+[   10.276842]  dequeue_task+0x94/0xd8
+[   10.276849]  deactivate_task+0x2c/0x38
+[   10.276857]  __schedule+0x4fc/0x6a0
+[   10.276865]  schedule+0x90/0xd8
+[   10.276873]  schedule_preempt_disabled+0x1c/0x28
+[   10.276882]  __mutex_lock.constprop.0+0x1a0/0x27c
+[   10.276891]  __mutex_lock_slowpath+0x1c/0x28
+[   10.276900]  mutex_lock+0x40/0x50
+[   10.276908]  irq_lock_sparse+0x28/0x34
+[   10.276916]  bringup_cpu+0x30/0xc0
+[   10.276923]  cpuhp_invoke_callback+0x100/0x260
+[   10.276932]  cpuhp_invoke_callback_range+0x78/0xac
+[   10.276940]  notify_cpu_starting+0x84/0xa0
+[   10.276948]  secondary_start_kernel+0x130/0x1d0
+[   10.276955]  __secondary_switched+0xa0/0xa4
+[   10.276965] bad: scheduling from the idle thread!
+[   10.276969] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G        W         5.19.5-gnu+ #2
+[   10.276977] Hardware name: Firefly ITX-3588J HDMI(Linux) (DT)
+[   10.276981] Call trace:
+[   10.276983]  dump_backtrace+0xec/0x110
+[   10.276991]  show_stack+0x24/0x34
+[   10.276998]  dump_stack_lvl+0x7c/0xa0
+[   10.277005]  dump_stack+0x18/0x34
+[   10.277012]  dequeue_task_idle+0x38/0x54
+[   10.277020]  dequeue_task+0x94/0xd8
+[   10.277028]  deactivate_task+0x2c/0x38
+[   10.277035]  __schedule+0x4fc/0x6a0
+[   10.277044]  schedule+0x90/0xd8
+[   10.277052]  schedule_preempt_disabled+0x1c/0x28
+[   10.277060]  __mutex_lock.constprop.0+0x1a0/0x27c
+[   10.277069]  __mutex_lock_slowpath+0x1c/0x28
+[   10.277078]  mutex_lock+0x40/0x50
+[   10.277086]  irq_lock_sparse+0x28/0x34
+[   10.277094]  bringup_cpu+0x30/0xc0
+[   10.277102]  cpuhp_invoke_callback+0x100/0x260
+[   10.277110]  cpuhp_invoke_callback_range+0x78/0xac
+[   10.277118]  notify_cpu_starting+0x84/0xa0
+[   10.277126]  secondary_start_kernel+0x130/0x1d0
+[   10.277133]  __secondary_switched+0xa0/0xa4
+[   10.277144] bad: scheduling from the idle thread!
+[   10.277147] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G        W         5.19.5-gnu+ #2
+[   10.277155] Hardware name: Firefly ITX-3588J HDMI(Linux) (DT)
+....
