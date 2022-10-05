@@ -766,3 +766,145 @@ TODO flesh out the initramfs, get a rootfs booting
 - probably want to print available /dev/mmc devices and figure out which is our sdcard
   using things like lsblk, and the partition labels
 
+
+this is likely why we aren't seeing the sdcard:
+```
+1.128960]  mmcblk0: p1 p2 p3 p4 p5 p6 p7
+[    1.130311] rockchip-pinctrl pinctrl: pin gpio4-24 already requested by feb50000.serial; cannot claim for fe2c0000.mmc
+[    1.130725] rockchip-spdif fddb0000.spdif-tx: ignoring dependency for device, assuming no driver
+[    1.131125] mmcblk0boot0: mmc0:0001 Y2P128 4.00 MiB
+[    1.131245] rockchip-pinctrl pinctrl: pin-152 (fe2c0000.mmc) status -22
+[    1.132794] mmcblk0boot1: mmc0:0001 Y2P128 4.00 MiB
+[    1.133038] rockchip-pinctrl pinctrl: could not request pin 152 (gpio4-24) from group sdmmc-bus4  on device rockchip-pinctrl
+[    1.134021] ALSA device list:
+[    1.134444] dwmmc_rockchip fe2c0000.mmc: Error applying setting, reverse things back
+```
+this gpio is likely related to the above issue issue
+```
+	{RK_GPIO2_D4, RK3588_EMMC_IOC_REG + 0x005C},
+```
+
+
+	sdmmc: mmc@fe2c0000 {
+		compatible = "rockchip,rk3588-dw-mshc", "rockchip,rk3288-dw-mshc";
+		reg = <0x0 0xfe2c0000 0x0 0x4000>;
+		interrupts = <GIC_SPI 203 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&scmi_clk SCMI_HCLK_SD>, <&scmi_clk SCMI_CCLK_SD>,
+			 <&cru SCLK_SDMMC_DRV>, <&cru SCLK_SDMMC_SAMPLE>;
+		clock-names = "biu", "ciu", "ciu-drive", "ciu-sample";
+		fifo-depth = <0x100>;
+		max-frequency = <200000000>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_det &sdmmc_bus4>;
+		power-domains = <&power RK3588_PD_SDMMC>;
+
+when plugging the sd card into stock:
+
+```
+root@firefly:~# [   65.046083] mmc_host mmc2: Bus speed (slot 0) = 148500000Hz (slot req 150000000Hz, actual 148500000HZ div = 0)
+[   65.187228] dwmmc_rockchip fe2c0000.mmc: Successfully tuned phase to 360
+[   65.187472] mmc2: new ultra high speed SDR104 SDHC card at address aaaa
+[   65.191981] mmcblk2: mmc2:aaaa SE32G 29.7 GiB
+[   65.211362]  mmcblk2: p1 p2
+```
+
+nothing happens when plugging an sd card in to our kernel build
+
+debug why the sd card is not getting seen by the kernel
+
+brought in a number of drivers, still not getting there, but we have some good debug info:
+
+```
+[    1.201921] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL probing for dw_mci_rockchip
+[    1.202563] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL probing for dw_mci_rockchip: use_rpm = false
+[    1.203357] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL dw_mcp_pltform_register
+[    1.204148] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL dw_mcp_pltform_register: complete, calling dw_mci_probe
+[    1.204996] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL dw_mci_probe
+[    1.205515] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL dw_mci_part_dt
+[    1.206085] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL dw_mci_part_dt: complete
+[    1.206850] dwmmc_rockchip fe2c0000.mmc: IDMAC supports 32-bit address mode.
+[    1.207498] dwmmc_rockchip fe2c0000.mmc: Using internal DMA controller.
+[    1.208091] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL dw_mci_probe: checkpoint 3
+[    1.208716] dwmmc_rockchip fe2c0000.mmc: Version ID is 270a
+[    1.209244] dwmmc_rockchip fe2c0000.mmc: DW MMC controller at irq 43,32 bit host data width,256 deep fifo
+[    1.210121] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL dw_mci_init_slot
+[    1.210835] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL regulator_dev_lookup supply vqmmc: RETURN EPROBE_DEFER
+[    1.211673] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL _regulator_get supply vqmmc: lookup failed! ret = -517
+[    1.212512] dwmmc_rockchip fe2c0000.mmc: No vmmc regulator found
+[    1.213045] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL: mmc_regulator_get_supply: error: supply.vqmmc is -EPROBE_DEFER
+[    1.213997] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL dw_mci_init_slot: mmc_regulator_get_supply failed: ret = -517
+[    1.214887] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL dw_mci_init_slot: erro_host_allocated: ret = -517
+[    1.215825] dwmmc_rockchip fe2c0000.mmc: slot 1 init failed
+[    1.216327] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL dw_mci_probe: err_dmaunmap
+[    1.217000] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL dw_mci_probe: returning error: -517
+[    1.217695] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL probing for dw_mci_rockchip: error registering: -517
+```
+
+the lookup for the vqmmc regulator fails with:
+
+```
+[    1.210835] dwmmc_rockchip fe2c0000.mmc: SOLIDHAL regulator_dev_lookup supply vqmmc: RETURN EPROBE_DEFER
+```
+
+this is in regulator/core.c
+```
+ * -ENODEV if lookup fails permanently, -EPROBE_DEFER if lookup could succeed
+ * in the future.
+```
+
+```
+			/*
+			 * We have a node, but there is no device.
+			 * assume it has not registered yet.
+			 */
+```
+
+this is the dtsi entry
+```
+&sdmmc {
+	max-frequency = <150000000>;
+	no-sdio;
+	no-mmc;
+	bus-width = <4>;
+	cap-mmc-highspeed;
+	cap-sd-highspeed;
+	disable-wp;
+	sd-uhs-sdr104;
+	vqmmc-supply = <&vccio_sd_s0>;
+	status = "disabled";
+};
+```
+
+the regulator is defined in rk3588-rk806-single.dtsi
+```
+			vccio_sd_s0: PLDO_REG5 {
+				regulator-always-on;
+				regulator-boot-on;
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <3300000>;
+				regulator-name = "vccio_sd_s0";
+				regulator-state-mem {
+					regulator-off-in-suspend;
+				};
+			};
+```
+
+PLD0_REG5 is defined in rk806-regulator.c
+```
+drivers/regulator/rk806-regulator.c
+```
+which is getting built into the kernel
+
+these drivers are of interest
+```
+drivers/mfd/rk806-core.c
+drivers/regulator/rk806-regulator.c
+```
+
+they both were copied in from the itx tree
+
+turns out its because we didn't have the rk806 spi driver.
+
+now have the kernel booting into a rootfs, with networking up.
+
+
