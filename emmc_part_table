@@ -1,0 +1,15 @@
+label: gpt
+label-id: 73987B6B-4974-4C94-A3E8-58AB2EB7A946
+device: /dev/mmcblk0
+unit: sectors
+first-lba: 34
+last-lba: 244277214
+sector-size: 512
+
+/dev/mmcblk0p1 : start=       16384, size=        8192, type=F808D051-1602-4DCD-9452-F9637FEFC49A, uuid=B750E44E-833F-4A30-C38C-B117241D84D4, name="uboot"
+/dev/mmcblk0p2 : start=       24576, size=        8192, type=C6D08308-E418-4124-8890-F8411E3D8D87, uuid=A1C81622-7741-47AD-B846-C6972488D396, name="misc"
+/dev/mmcblk0p3 : start=       32768, size=      524288, type=2A583E58-486A-4BD4-ACE4-8D5454E97F5C, uuid=43784A32-A03D-4ADE-92C6-EDE64FF9B794, name="boot", attrs="LegacyBIOSBootable"
+/dev/mmcblk0p4 : start=      557056, size=      262144, type=6115F139-4F47-4BAF-8D23-B6957EAEE4B3, uuid=000B305F-484A-4582-9090-4AD0099D47BD, name="recovery"
+/dev/mmcblk0p5 : start=      819200, size=       65536, type=A83FBA16-D354-45C5-8B44-3EC50832D363, uuid=24EEB649-277F-4C11-FFEB-D9F20027A83B, name="backup"
+/dev/mmcblk0p6 : start=      884736, size=    12582912, type=500E2214-B72D-4CC3-D7C1-8419260130F5, uuid=614E0000-0000-4B53-8000-1D28000054A9, name="rootfs"
+/dev/mmcblk0p7 : start=    13467648, size=   230809567, type=E099DA71-5450-44EA-AA9F-1B771C582805, uuid=2BFEE623-D83C-426A-AB80-21732C9BB7D3, name="userdata"

@@ -400,6 +400,18 @@ p5 is labeled backup, its not a mountable fs
 p6 is the rootfs, its mountable
 p7 is the overlay/userdata partition
 
+dumped the emmc part table using
+
+```
+sfdisk -d /dev/mmcblk0 > emmc_part_table
+```
+
+it can be restored by doing
+```
+sfdisk /dev/mmcblk0 < emmc_part_table
+```
+
+
 ## u-boot notes
 
 the config is made up of
