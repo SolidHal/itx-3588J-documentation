@@ -1,0 +1,235 @@
+#!/bin/bash
+# author: Frank Rowand  frank.rowand@sonymobile.com
+# license: GPL V2
+#_______________________________________________________________________________
+
+script=`basename $0`
+help=0
+
+
+cmd_d=0
+cmd_n=0
+cmd_nb=0
+cmd_nd=0
+cmd_nxb=0
+cmd_nxd=0
+
+if [ $# -eq 0 ] ; then
+	help=1
+fi
+
+while [ $# -gt 0 ]; do
+	ARG=${1:1}
+
+	case "$ARG" in
+		h | -help)
+			help=1
+			break
+			;;
+		"d")
+			cmd_d=1
+			shift
+			;;
+		"n")
+			cmd_n=1
+			shift
+			;;
+		"nb")
+			cmd_nb=1
+			shift
+			;;
+		"nd")
+			cmd_nd=1
+			shift
+			;;
+		"nxb")
+			cmd_nxb=1
+			shift
+			;;
+		"nxd")
+			cmd_nxd=1
+			shift
+			;;
+		*)
+			echo "ERROR: invalid parameter" 1>&2
+			exit 1
+			;;
+	esac
+
+done
+
+
+#_______________________________________________________________________________
+
+PDT="/proc/device-tree/"
+
+
+#_______________________________________________________________________________
+
+if [ ${help} -eq 1 ] ; then
+	cat<<EOF 1>&2
+
+usage:
+   dt_stat
+
+      -h         synonym for --help
+      --help     print this message and exit
+
+      -d        report devices
+      -n        report nodes
+      -nb       report nodes bound to a driver
+      -nd       report nodes with a device
+      -nxb      report nodes not bound to a driver
+      -nxd      report nodes without a device
+
+   Reports about nodes in /proc/device-tree/
+   Nodes without a compatible string are not reported
+
+   data fields reported:
+      -d        Device Node
+      -n        Node Compatible
+      -nb       Node Compatible
+      -nd       Node Compatible Device Driver
+      -nxb      Node Compatible
+      -nxd      Node Compatible
+EOF
+	exit 1
+fi
+
+
+#_______________________________________________________________________________
+if [ ! -d /sys/devices ] ; then
+	echo "ERROR: /sys/devices is not a directory"                                >&2
+	exit 1
+fi
+
+
+if [ ! -d "$PDT" ] ; then
+	echo "ERROR: ${PDT} is not a directory"                                      >&2
+	exit 1
+fi
+
+# ==============================================================================
+# COLLECT DATA
+
+UEVENTS="$(find /sys/devices -name uevent)"
+
+#-----  nodes of devices with an OF_FULLNAME in uevent
+#-----  nodes with a device that has been bound to a driver
+NODES_DEV=""
+function get_nodes_dev() {
+	for dev in $UEVENTS; do
+		rg '^OF_FULLNAME=' "${dev}" | sed -e 's|OF_FULLNAME=||'
+	done | sort
+}
+function nodes_dev() {
+	if [ -z "$NODES_DEV" ]; then
+		NODES_DEV="$(get_nodes_dev)"
+	fi
+	echo "$NODES_DEV"
+}
+
+NODES_DEV_BOUND=""
+function get_nodes_dev_bound() {
+	for uevent in $UEVENTS; do
+		rg '^OF_FULLNAME=' "${uevent}" | sed -e 's|OF_FULLNAME=||'
+	done | sort
+}
+
+function nodes_dev_bound() {
+	if [ -z "$NODES_DEV_BOUND" ]; then
+		NODES_DEV_BOUND="$(get_nodes_dev_bound)"
+	fi
+	echo "$NODES_DEV_BOUND"
+}
+
+#-----  nodes with a compatible property
+NODES_COMPAT=""
+function get_nodes_compat() {
+	local D
+	for node in `find "${PDT}" -name compatible -type f`; do
+		D=$(dirname "${node}")
+		echo "$D" | sed -e 's|\/proc\/device-tree||'
+	done | sort
+}
+function nodes_compat() {
+	if [ -z "$NODES_COMPAT" ]; then
+		NODES_COMPAT="$(get_nodes_compat)"
+	fi
+	echo "$NODES_COMPAT"
+}
+
+TABS='		'
+
+# ==============================================================================
+# REPORTS
+
+#-----  devices with an OF_FULLNAME in uevent
+
+if [ ${cmd_d} -eq 1 ] ; then
+	for dev in $UEVENTS; do
+		if rg -q '^OF_FULLNAME' "${dev}" ; then
+			node=$(rg '^OF_FULLNAME' "${dev}" | sed -e 's|OF_FULLNAME=||')
+			echo $(dirname "${dev}") $TABS "${node}"
+		fi
+	done | sort
+fi
+
+#-----  nodes with a compatible property
+
+if [ ${cmd_n} -eq 1 ] ; then
+	for node in $(nodes_compat) ; do
+		if [ -f "${PDT}/${node}/compatible" ]; then
+			echo "$node" $TABS $( tr -d '\0' < "${PDT}/${node}/compatible")
+		fi
+	done
+fi
+
+
+#-----  nodes with device bound to driver
+if [ ${cmd_nb} -eq 1 ] ; then
+	for node in $(nodes_dev_bound) ; do
+		if [ -f "$PDT/${node}/compatible" ]; then
+			echo "${node}" $TABS $( tr -d '\0' < "$PDT/${node}/compatible")
+		fi
+	done
+fi
+
+
+#-----  nodes with a device
+
+if [ ${cmd_nd} -eq 1 ] ; then
+	for uevent in $UEVENTS; do
+		if [ -f "$uevent" ]; then
+			node=$(rg '^OF_FULLNAME=' "${uevent}" | sed -e 's|OF_FULLNAME=||')
+			if [[ "${node}" != "" ]] ; then
+				dev=$(dirname "${uevent}")
+				# driver might be empty
+				driver=$(rg '^DRIVER=' "${uevent}" | sed -e 's|DRIVER=||')
+				echo "$node" $TABS $( tr -d '\0' < "${PDT}/${node}/compatible") $TABS "$dev" $TABS "$driver"
+			fi
+		fi
+	done | sort
+fi
+
+
+#-----  nodes not bound to a driver
+
+if [ ${cmd_nxb} -eq 1 ] ; then
+	for node in $(nodes_compat); do
+		if ! echo $(nodes_dev_bound) | rg -E -q "(^|)${node}( |\$)"; then
+			echo "${node}" $TABS $( tr -d '\0' < "${PDT}/${node}/compatible")
+		fi
+	done
+fi
+
+
+#-----  nodes without a device
+
+if [ ${cmd_nxd} -eq 1 ] ; then
+	for node in $(nodes_compat); do
+		if ! echo $(nodes_dev) | rg -E -q "(^|)${node}( |\$)"; then
+			echo "${node}" $TABS $( tr -d '\0' < "${PDT}/${node}/compatible")
+		fi
+	done
+fi

@@ -346,6 +346,60 @@ uboot
 extlinux
 linux
 
+## emmc partition layout
+
+```
+Disk /dev/mmcblk0: 116.48 GiB, 125069950976 bytes, 244277248 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: 73987B6B-4974-4C94-A3E8-58AB2EB7A946
+
+Device            Start       End   Sectors   Size Type
+/dev/mmcblk0p1    16384     24575      8192     4M unknown
+/dev/mmcblk0p2    24576     32767      8192     4M unknown
+/dev/mmcblk0p3    32768    557055    524288   256M unknown
+/dev/mmcblk0p4   557056    819199    262144   128M unknown
+/dev/mmcblk0p5   819200    884735     65536    32M unknown
+/dev/mmcblk0p6   884736  13467647  12582912     6G unknown
+/dev/mmcblk0p7 13467648 244277214 230809567 110.1G unknown
+```
+
+```
+(parted) print
+Model: MMC Y2P128 (sd/mmc)
+Disk /dev/mmcblk0: 125GB
+Sector size (logical/physical): 512B/512B
+Partition Table: gpt
+Disk Flags:
+
+Number  Start   End     Size    File system  Name      Flags
+ 1      8389kB  12.6MB  4194kB               uboot
+ 2      12.6MB  16.8MB  4194kB               misc
+ 3      16.8MB  285MB   268MB   ext4         boot      legacy_boot
+ 4      285MB   419MB   134MB                recovery
+ 5      419MB   453MB   33.6MB               backup
+ 6      453MB   6895MB  6442MB  ext4         rootfs
+ 7      6895MB  125GB   118GB   ext4         userdata
+```
+
+p1, p2 are uboot partitions
+only p1 actually has a uboot image
+p2 has nearly all 0s, with "false" at byte 17221. Which is kinda strange. Must be some sort of "do not use this" flag to the bootrom
+
+p1 is labeled uboot
+p2 is labeled misc
+
+TODO: theory: if p1 is not bootable, it might try p2 instead? copy p1 to p2 before testing uboot images
+
+p3 is the boot partition, its mountable, containing the kernel image, extlinux.conf for uboot, initrd, and device trees
+p4 is labeled recovery, its not a mountable fs
+
+p5 is labeled backup, its not a mountable fs
+p6 is the rootfs, its mountable
+p7 is the overlay/userdata partition
+
 ## u-boot notes
 
 the config is made up of
@@ -906,5 +960,16 @@ they both were copied in from the itx tree
 turns out its because we didn't have the rk806 spi driver.
 
 now have the kernel booting into a rootfs, with networking up.
+
+
+## Upstream Uboot notes
+
+
+
+
+
+
+
+
 
 
