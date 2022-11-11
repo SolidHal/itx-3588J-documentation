@@ -199,8 +199,60 @@ sudo ./mkfirmware.sh
 ```
 
 Pack the image, the img will be saved to the directory rockdev/pack/.
+This image will be in the RK format, to be used by RK tools like RKDevTool or SD_Firmware_Tool
 ```
 sudo ./build.sh updateimg
+```
+
+if instead you want a raw image, you can do
+```
+./build.sh rawimg
+```
+which can then be written to an sd card directly using `dd`
+
+but that fails with
+```
+$sudo ./build.sh rawimg
+processing option: rawimg
+File name is  ITX-3588J_Debian11_v0.1.0a_RAW_221111.img
+Rename the file? [N|y]
+Not found RK_RECOVERY_RAMDISK_RAW!
+```
+so lets lie to the build to get a "raw" image to look at
+```
+export RK_RECOVERY_RAMDISK_RAW=rk3588-recovery-arm64.cpio.gz
+```
+
+
+
+## Build outputs
+
+all of the outputs to package the image are linked in the `rockdev` directory
+```
+lrwxrwxrwx  1 root     root       41 Sep 18 11:35 MiniLoaderAll.bin -> ../u-boot/rk3588_spl_loader_v1.07.111.bin
+lrwxrwxrwx  1 root     root       21 Sep 18 11:35 boot.img -> ../kernel/extboot.img
+lrwxrwxrwx  1 root     root       44 Sep 18 11:35 misc.img -> ../device/rockchip/rockimg/wipe_all-misc.img
+-rw-r--r--  1 root     root      17M Sep 18 11:35 oem.img
+drwxr-xr-x  2 root     root     4.0K Sep 18 11:36 pack
+lrwxrwxrwx  1 root     root       50 Sep 18 11:35 parameter.txt -> ../device/rockchip/rk3588/parameter-ubuntu-fit.txt
+-rw-r--r--  1 root     root      70M Aug 23 22:54 recovery.img
+lrwxrwxrwx  1 root     root       29 Sep 18 11:35 rootfs.img -> ../debian/debian11-rootfs.img
+lrwxrwxrwx  1 root     root       19 Sep 18 11:35 uboot.img -> ../u-boot/uboot.img
+-rw-r--r--  1 root     root     4.3M Sep 18 11:35 userdata.img
+```
+
+and are used to make a package, as laid out in the package file
+```
+package-file	package-file
+bootloader	Image/MiniLoaderAll.bin
+parameter	Image/parameter.txt
+uboot		Image/uboot.img
+misc		Image/misc.img
+boot		Image/boot.img
+recovery	Image/recovery.img
+rootfs		Image/rootfs.img
+userdata	RESERVED
+backup		RESERVED
 ```
 
 
@@ -339,12 +391,76 @@ while uboot.img is linked to
 
 uboot.img -> ../u-boot/uboot.img
 
-## boot process (tenative)
+## boot process
 uboot spl (miniloaderall)
 uboot tpl ?? CONFIG_SUPPORT_TPL=y
 uboot
 extlinux
 linux
+
+```
+DDR Version V1.07 20220412
+LPDDR4X, 2112MHz
+channel[0] BW=16 Col=10 Bk=8 CS0 Row=17 CS1 Row=17 CS=2 Die BW=16 Size=4096MB
+channel[1] BW=16 Col=10 Bk=8 CS0 Row=17 CS1 Row=17 CS=2 Die BW=16 Size=4096MB
+channel[2] BW=16 Col=10 Bk=8 CS0 Row=17 CS1 Row=17 CS=2 Die BW=16 Size=4096MB
+channel[3] BW=16 Col=10 Bk=8 CS0 Row=17 CS1 Row=17 CS=2 Die BW=16 Size=4096MB
+change to F1: 528MHz
+change to F2: 1068MHz
+change to F3: 1560MHz
+change to F0: 2112MHz
+out
+U-Boot SPL board init
+U-Boot SPL 2017.09-gc060f28d70-220414 #zyf (Apr 18 2022 - 18:13:34)
+Failed to set cpub01
+Failed to set cpub23
+unknown raw ID phN
+unrecognized JEDEC id bytes: 00, 00, 00
+Trying to boot from MMC2
+MMC: no card present
+mmc_init: -123, time 0
+spl: mmc init failed with error: -123
+Trying to boot from MMC1
+Trying fit image at 0x4000 sector
+## Verified-boot: 0
+## Checking atf-1 0x00040000 ... sha256(5ae6932916...) + OK
+## Checking uboot 0x00200000 ... sha256(3aedff9769...) + OK
+## Checking fdt 0x00348348 ... sha256(c07f4a4d71...) + OK
+## Checking atf-2 0x000f0000 ... sha256(c00c7fd75b...) + OK
+## Checking atf-3 0xff100000 ... sha256(71c3a5841b...) + OK
+## Checking atf-4 0xff001000 ... sha256(2301cf73be...) + OK
+## Checking optee 0x08400000 ... sha256(4ed9cd20b5...) + OK
+Jumping to U-Boot(0x00200000) via ARM Trusted Firmware(0x00040000)
+Total: 120.28 ms
+
+INFO:    Preloader serial: 2
+NOTICE:  BL31: v2.3():v2.3-384-g45c8fcb44:derrick.huang
+NOTICE:  BL31: Built : 15:14:04, Jun 18 2022
+INFO:    ext 32k is not valid
+INFO:    GICv3 without legacy support detected.
+INFO:    ARM GICv3 driver initialized in EL3
+INFO:    system boots from cpu-hwid-0
+INFO:    idle_st=0x21fff, pd_st=0x11fff9, repair_st=0xfff70001
+INFO:    dfs DDR fsp_params[0].freq_mhz= 2112MHz
+INFO:    dfs DDR fsp_params[1].freq_mhz= 528MHz
+INFO:    dfs DDR fsp_params[2].freq_mhz= 1068MHz
+INFO:    dfs DDR fsp_params[3].freq_mhz= 1560MHz
+INFO:    BL31: Initialising Exception Handling Framework
+INFO:    BL31: Initializing runtime services
+INFO:    BL31: Initializing BL32
+INFO:    hdmirx_handler: dma not on, ret
+I/TC:
+I/TC: OP-TEE version: 3.13.0-645-g87d94c5ef8 #xb.wang (gcc version 10.2.1 20201103 (GNU Toolchain for the A-profile Architecture 10.2-2020.11 (arm-10.16))) #1 Tue Jun 14 10:44:31 CST 2022 aarch64
+I/TC: Primary CPU initializing
+I/TC: Primary CPU switching to normal world boot
+INFO:    BL31: Preparing for EL3 exit to normal world
+INFO:    Entry point address = 0x200000
+INFO:    SPSR = 0x3c9
+
+
+U-Boot 2017.09(u-boot commit id: d7c783e108)(sdk version: rk3588_linux_release_20220422_v0.1.0a)-gd7c783e108 #solidhal (Sep 18 2022 - 11:35:18 -0700)
+```
+
 
 ## emmc partition layout
 
@@ -976,10 +1092,74 @@ now have the kernel booting into a rootfs, with networking up.
 
 ## Upstream Uboot notes
 
+looks like we can test uboot images on an sdcard, the early loader checks the sd card first:
+
+```
+U-Boot SPL board init
+U-Boot SPL 2017.09-gc060f28d70-220414 #zyf (Apr 18 2022 - 18:13:34)
+Failed to set cpub01
+Failed to set cpub23
+unknown raw ID phN
+unrecognized JEDEC id bytes: 00, 00, 00
+Trying to boot from MMC2
+MMC: no card present
+mmc_init: -123, time 0
+spl: mmc init failed with error: -123
+Trying to boot from MMC1
+Trying fit image at 0x4000 sector
+## Verified-boot: 0
+## Checking atf-1 0x00040000 ... sha256(5ae6932916...) + OK
+## Checking uboot 0x00200000 ... sha256(3aedff9769...) + OK
+## Checking fdt 0x00348348 ... sha256(c07f4a4d71...) + OK
+## Checking atf-2 0x000f0000 ... sha256(c00c7fd75b...) + OK
+## Checking atf-3 0xff100000 ... sha256(71c3a5841b...) + OK
+## Checking atf-4 0xff001000 ... sha256(2301cf73be...) + OK
+## Checking optee 0x08400000 ... sha256(4ed9cd20b5...) + OK
+Jumping to U-Boot(0x00200000) via ARM Trusted Firmware(0x00040000)
+Total: 120.28 ms
+```
+
+copied the partition format, and the uboot partition from the emmc to the sdcard, success!
+```
+U-Boot SPL board init
+U-Boot SPL 2017.09-gc060f28d70-220414 #zyf (Apr 18 2022 - 18:13:34)
+Failed to set cpub01
+Failed to set cpub23
+unknown raw ID phN
+unrecognized JEDEC id bytes: 00, 00, 00
+Trying to boot from MMC2
+Trying fit image at 0x4000 sector
+## Verified-boot: 0
+## Checking atf-1 0x00040000 ... sha256(5ae6932916...) + OK
+## Checking uboot 0x00200000 ... sha256(3aedff9769...) + OK
+## Checking fdt 0x00348348 ... sha256(c07f4a4d71...) + OK
+## Checking atf-2 0x000f0000 ... sha256(c00c7fd75b...) + OK
+## Checking atf-3 0xff100000 ... sha256(71c3a5841b...) + OK
+## Checking atf-4 0xff001000 ... sha256(2301cf73be...) + OK
+## Checking optee 0x08400000 ... sha256(4ed9cd20b5...) + OK
+Jumping to U-Boot(0x00200000) via ARM Trusted Firmware(0x00040000)
+Total: 255.517 ms
+```
+
+the partition look like:
+```
+Device          Start       End   Sectors   Size Type
+/dev/mmcblk2p1  16384     24575      8192     4M unknown
 
 
+Number  Start   End     Size    File system  Name        Flags
+ 1      8389kB  12.6MB  4194kB               uboot
+```
 
-
+the second 4M partition isn't valid, the bootrom does not look there.
+```
+Trying to boot from MMC2
+Trying fit image at 0x4000 sector
+Not fit magic
+Trying fit image at 0x5000 sector
+Not fit magic
+```
+and then tries the emmc (MMC1) instead
 
 
 
