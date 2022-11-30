@@ -350,6 +350,10 @@ docker  lost+found  recovery  rootfs_overlay  rootfs_overlay-workdir  wifi_chip
 
 ## emmc bootable image
 
+
+the first 8MiB of the emmc seem to be parts of the spl/tpl and are important to booting
+it has been dumped to `emmc_header.img` in this repo
+
 partition layout
 from device/rockchip/rk3588/parameter-ubuntu-fit.txt
 which is used by
@@ -1151,7 +1155,7 @@ Number  Start   End     Size    File system  Name        Flags
  1      8389kB  12.6MB  4194kB               uboot
 ```
 
-the second 4M partition isn't valid, the bootrom does not look there.
+the second 4M partition isn't valid, the bootrom does not look there. so we can't do A/B upgrades like that
 ```
 Trying to boot from MMC2
 Trying fit image at 0x4000 sector
